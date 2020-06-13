@@ -1,0 +1,64 @@
+---
+title: "PA_1"
+author: "me"
+date: "13/06/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##COURSE PROJECT
+1.Code for reading in the dataset and/or processing the data
+```{r}
+a<-read.csv("C:/Users/Shreyas Bhoyar/Documents/data/activity.csv")
+dim(a)
+```
+2.Histogram of the total number of steps taken each day
+```{r}
+d<-tapply(a$steps,a$date,FUN=sum,na.rm=TRUE)
+hist(d)
+```
+3.Mean and median number of steps taken each day
+```{r}
+tapply(a$steps,a$date,FUN=mean,na.rm=TRUE)
+tapply(a$steps,a$date,FUN=median,na.rm=TRUE)
+```
+4.Time series plot of the average number of steps taken
+```{r}
+s<-tapply(a$steps,a$interval,FUN=mean,na.rm=TRUE)
+plot(s,type="l")
+
+```
+5.The 5-minute interval that, on average, contains the maximum number of steps
+```{r}
+which.max(s)
+```
+6.Code to describe and show a strategy for imputing missing data
+```{r}
+sum(is.na(a$steps))
+a$steps[is.na(a$steps)]<-mean(a$steps,na.rm=TRUE)
+```
+7.Histogram of the total number of steps taken each day after missing values are imputed
+```{r}
+d1<-tapply(a$steps,a$date,FUN=sum,na.rm=TRUE)
+hist(d1)
+tapply(a$steps,a$date,FUN=mean,na.rm=TRUE)
+tapply(a$steps,a$date,FUN=median,na.rm=TRUE)
+```
+8.Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
+```{r}
+library(dplyr)
+k<-weekdays(as.Date(a$date))
+t<-replace(k,1:12960,"weekday")
+t1<-replace(t,12960:17568,"weekend")
+k1<-data.frame(a,as.factor(t1))
+names(k1)<-c("steps","date","interval","week")
+w1<-filter(k1,week=="weekday")
+s1<-tapply(w1$steps,w1$interval,FUN=mean,na.rm=TRUE)
+plot(s1,type="l")
+w2<-filter(k1,week=="weekend")
+s2<-tapply(w2$steps,w2$interval,FUN=mean,na.rm=TRUE)
+plot(s2,type="l")
+```
